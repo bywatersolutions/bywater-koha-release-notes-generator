@@ -2,7 +2,6 @@
 
 use Modern::Perl;
 
-use File::Slurp;
 use Data::Dumper;
 use REST::Client;
 use JSON;
