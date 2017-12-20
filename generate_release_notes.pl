@@ -17,8 +17,7 @@ my $dir = '.';
 $debug && warn "KOHACLONE: " . $ENV{KOHACLONE};
 chdir $ENV{KOHACLONE};
 
-my $branch = read_file( $ENV{KOHACLONE} . "/misc/bwsbranch");
-chomp $branch;
+my $branch = $ENV{KOHA_BRANCH};
 
 $debug && warn "BRANCH IS $branch";
 

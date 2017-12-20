@@ -5,7 +5,7 @@ LABEL maintainer="kyle@bywatersolutions.com"
 ENV DEBUG 0
 ENV PERL5LIB /app/local/lib/perl5/:/app/local/lib/perl5/x86_64-linux-gnu/
 ENV KOHACLONE /kohaclone
-# docker run --mount type=bind,source=/Users/kylehall/kohaclone,target=/kohaclone relnotes
+# docker run --env KOHA_BRANCH=bywater-v17.05.06-01 --env DEBUG=1 --mount type=bind,source=/Users/kylehall/kohaclone,target=/kohaclone relnotes
 
 WORKDIR /app
 ADD . /app
