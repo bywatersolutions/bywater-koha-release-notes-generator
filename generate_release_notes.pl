@@ -12,12 +12,13 @@ my $debug = $ENV{DEBUG};
 
 my $rest = REST::Client->new();
 
-my $dir = '.';
-
 $debug && warn "KOHACLONE: " . $ENV{KOHACLONE};
 chdir $ENV{KOHACLONE};
 
 my $branch = $ENV{KOHA_BRANCH};
+
+`git fetch --all >/dev/null 2>&1`;
+`git checkout $branch >/dev/null 2>&1`;
 
 $debug && warn "BRANCH IS $branch";
 
@@ -51,7 +52,7 @@ for ( my $i = 0 ; $i < scalar @branches ; $i++ ) {
     }
 }
 
-my @commits = `git log $prev_branch..$branch --pretty=oneline`;
+my @commits = `git log bws-production/$prev_branch..bws-production/$branch --pretty=oneline`;
 $debug && warn "DIFF git log $prev_branch..$branch --pretty=oneline";
 $_ =~ s/^\s+|\s+$//g for @commits;
 @commits = map { substr( $_, 41 ) } @commits;
