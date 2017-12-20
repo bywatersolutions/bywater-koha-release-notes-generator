@@ -57,7 +57,7 @@ $debug && warn "DIFF git log $prev_branch..$branch --pretty=oneline";
 $_ =~ s/^\s+|\s+$//g for @commits;
 @commits = map { substr( $_, 41 ) } @commits;
 
-`git checkout $prev_branch`;
+`git checkout $prev_branch >/dev/null 2>&1`;
 
 my @skip_messages = (
     "bwsbranch",
@@ -97,7 +97,9 @@ COMMITS: foreach my $c (@commits) {
 
     my $escaped_c = $c;
     $escaped_c =~ s/"/\\"/g;    # Escape double quotes for searching
-    my $command = q{git log --pretty=oneline | grep "\Q} . $escaped_c . q{\E"};
+    $escaped_c =~ s/\[/\\\[/;
+    $escaped_c =~ s/\]/\\\]/;
+    my $command = qq{git log --pretty=oneline | grep "$escaped_c"};
     my ($already_found) = `$command`;
     if ($already_found) {
 
@@ -137,7 +139,7 @@ foreach my $c ( @commits_to_log_filtered ) {
     }
 }
 
-`git checkout $branch`;
+`git checkout $branch >/dev/null 2>&1`;
 
 $debug && warn Data::Dumper::Dumper( $commits );
 $debug && warn  "COUNT: " . scalar @commits_to_log_filtered;
