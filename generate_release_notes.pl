@@ -45,7 +45,7 @@ for ( my $i = 0 ; $i < scalar @branches ; $i++ ) {
             $prev_branch = $branches[ $i - 1 ];
         }
         else {
-            # FIXME: Handle case where this is the first 
+            # FIXME: Handle case where this is the first
             # special code fork, search bywater-v* versions?
         }
     }
@@ -130,18 +130,19 @@ foreach my $c (@commits_to_log_filtered) {
 
 # Group by component
 my $commits = {};
-foreach my $c ( @commits_to_log_filtered ) {
+foreach my $c (@commits_to_log_filtered) {
     if ( my $component = $c->{bugzilla}->{component} ) {
-        push( @{ $commits->{ $component } }, $c );
-    } else {
+        push( @{ $commits->{$component} }, $c );
+    }
+    else {
         push( @{ $commits->{'Bywater Only'} }, $c );
     }
 }
 
 `git checkout $branch >/dev/null 2>&1`;
 
-$debug && warn Data::Dumper::Dumper( $commits );
-$debug && warn  "COUNT: " . scalar @commits_to_log_filtered;
+$debug && warn Data::Dumper::Dumper($commits);
+$debug && warn "COUNT: " . scalar @commits_to_log_filtered;
 
 my $template = q{
 # Release Notes for [% branch %]
@@ -172,4 +173,23 @@ $tt->process(
     },
     \$output
 );
-say $output;
+
+if ( $ENV{UPLOAD} ) {
+    my $token = $ENV{GITHUB_TOKEN};
+    `git clone https://$token\@github.com/bywatersolutions/bywater-koha-release-notes.git`;
+    chdir './bywater-koha-release-notes';
+    `git config --global user.email 'kyle\@bywatetsolutions.com'`;
+    `git config --global user.name 'Kyle M Hall'`;
+    open( my $fh, '>', "$branch.md" );
+    print $fh $output . "\n";
+    close $fh;
+    `cat $prev_branch.md >> $branch.md`;
+    `git add *`;
+    `git commit -a -m 'Added $branch.md'`;
+    `git push origin HEAD:master`;
+    chdir '..';
+    `rm -rf bywater-koha-release-notes`;
+}
+else {
+    say $output;
+}

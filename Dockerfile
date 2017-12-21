@@ -4,6 +4,9 @@ LABEL maintainer="kyle@bywatersolutions.com"
 
 ENV DEBUG 0
 ENV KOHACLONE /kohaclone
+ENV UPLOAD 1
+#ENV GITHUB_TOKEN
+#ENV KOHA_BRANCH
 
 WORKDIR /app
 ADD . /app

@@ -3,7 +3,7 @@
 This project automatically outputs release notes for a given branch of ByWater Solutions GitHub repository bywater-koha
 
 The script is mean to be run using Docker via the command:
-docker run --env KOHA_BRANCH=bywater-v17.05.06-01 kylemhall/bywater-koha-release-notes-generator
+docker run --env UPLOAD=1 --env GITHUB_TOKEN=1234567890 --env KOHA_BRANCH=bywater-v17.05.06-01 kylemhall/bywater-koha-release-notes-generator
 
 It could also be run locally by setting the environment variables KOHACLONE to point to your git clone of Koha, and KOHA_BRANCH to specify the branch of the repo for which to build release notes.
 The local git repo used should have the remote bws-production set to point go bywatersolutions/bywater-koha on GitHub.
