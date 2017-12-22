@@ -55,6 +55,7 @@ my @commits = `git log bws-production/$prev_branch..bws-production/$branch --pre
 $debug && warn "DIFF git log $prev_branch..$branch --pretty=oneline";
 $_ =~ s/^\s+|\s+$//g for @commits;
 @commits = map { substr( $_, 41 ) } @commits;
+$debug && warn "COMMITS: " . Data::Dumper::Dumper( \@commits );
 
 `git checkout $prev_branch >/dev/null 2>&1`;
 
@@ -70,12 +71,10 @@ my @skip_messages = (
 my $custom_for_instance = $edition eq 'bywater' ? 0 : 1;
 my @commits_to_log;
 COMMITS: foreach my $c (@commits) {
-    ( undef, $c ) = split( / - /, $c, 2 )
-      if $custom_for_instance;    # Get rid of 'WASHOE - ' style prefixes;
-    $debug && warn "\nLOOKING AT $c";
+    my $bws_pkg = 0;
 
-    my $commit = { title => $c };
-
+    $debug && warn "CUSTOM FOR INSTANCE: $custom_for_instance";
+    $debug && warn "RAW SUBJECT: $c";
     foreach my $m (@skip_messages) {
         if ( $c =~ /$m/ ) {
             $debug && warn "SKIPPING - Commit message contains '$m'";
@@ -84,15 +83,20 @@ COMMITS: foreach my $c (@commits) {
     }
 
     if ( $c =~ /^BWS-PKG/ ) {
-        $debug && warn "STOPPING - End of custom of instance commits" && last
-          if $custom_for_instance
-          ; # If we are on a custom site branch, we only need to add the custom stuff. The notes on the 'bywater' branch have already added the rest.
-
-        $commit->{title} = $c;    # Get rid of BWS-PKG in title
-
-        $commit->{bws_pkg} = 1;
+        $custom_for_instance = 0; # Done with instance custom code as soon as we hit a BWS-PKG commit
+        $bws_pkg = 1;
         ( undef, $c ) = split( / - /, $c, 2 );    # Get rid of 'BWS-PKG - '
+    } elsif ( $custom_for_instance ) {
+        ( undef, $c ) = split( / - /, $c, 2 ); # Get rid of 'WASHOE - ' style prefixes;
     }
+
+    $debug && warn "\nMUNGED SUBJECT: $c";
+
+    my $commit = {
+        title => $c,
+        bws_pkg => $bws_pkg,
+        custom_for_instance => $custom_for_instance,
+    };
 
     my $escaped_c = $c;
     $escaped_c =~ s/"/\\"/g;    # Escape double quotes for searching
@@ -131,7 +135,10 @@ foreach my $c (@commits_to_log_filtered) {
 # Group by component
 my $commits = {};
 foreach my $c (@commits_to_log_filtered) {
-    if ( my $component = $c->{bugzilla}->{component} ) {
+    if ( $c->{custom_for_instance} ) {
+        push( @{ $commits->{'Custom For Instance'} }, $c );
+    }
+    elsif ( my $component = $c->{bugzilla}->{component} ) {
         push( @{ $commits->{$component} }, $c );
     }
     else {
