@@ -156,11 +156,11 @@ $debug && warn "COUNT: " . scalar @commits_to_log_filtered;
 my $template = q{
 # Release Notes for [% branch %]
 
-[%- FOREACH key IN commits.keys %]
+[%- FOREACH key IN commits.keys.sort %]
 ## [% key %]
 
   [%- FOREACH c IN commits.$key %]
-    [%- IF c.bug_number %]
+    [%- IF c.bugzilla.id %]
 - [[[% c.bugzilla.id %]]](http://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=[% c.bugzilla.id %]) [%- c.bugzilla.summary %]
     [%- ELSE %]
 - NOT IN BUGZILLA - [%- c.title %]
