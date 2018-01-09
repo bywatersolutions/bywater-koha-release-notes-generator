@@ -73,6 +73,8 @@ my @skip_messages = (
 my $custom_for_instance = $edition eq 'bywater' ? 0 : 1;
 my @commits_to_log;
 COMMITS: foreach my $c (@commits) {
+    next unless $c;
+
     my $bws_pkg = 0;
 
     $debug && warn "CUSTOM FOR INSTANCE: $custom_for_instance";
