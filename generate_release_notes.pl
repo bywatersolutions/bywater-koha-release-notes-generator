@@ -41,15 +41,17 @@ my $prev_branch;
 for ( my $i = 0 ; $i < scalar @branches ; $i++ ) {
     if ( $branches[$i] eq $branch ) {
         if ( $i > 0 ) {
-            $debug && warn "PREV BRANCH IS " . $branches[ $i - 1 ];
             $prev_branch = $branches[ $i - 1 ];
-        }
-        else {
-            # FIXME: Handle case where this is the first
-            # special code fork, search bywater-v* versions?
         }
     }
 }
+
+# Handle case where this is the first special code fork, use corrosponding bywater-v* versions
+if ( !$prev_branch && $edition ne 'bywater' ) {
+    $prev_branch = "bywater-v$version";
+}
+
+$debug && warn "PREV BRANCH IS $prev_branch";
 
 my @commits = `git log bws-production/$prev_branch..bws-production/$branch --pretty=oneline`;
 $debug && warn "DIFF git log $prev_branch..$branch --pretty=oneline";
