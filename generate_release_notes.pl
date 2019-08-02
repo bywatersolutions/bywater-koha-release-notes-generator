@@ -191,15 +191,24 @@ if ( $ENV{UPLOAD} ) {
     chdir './bywater-koha-release-notes';
     `git config --global user.email 'kyle\@bywatetsolutions.com'`;
     `git config --global user.name 'Kyle M Hall'`;
-    open( my $fh, '>', "$branch.md" );
+    my $filename = "$branch.md";
+    open( my $fh, '>', $filename );
     print $fh $output . "\n";
     close $fh;
-    `cat $prev_branch.md >> $branch.md`;
+    `cat $prev_branch.md >> $filename`;
     `git add *`;
-    `git commit -a -m 'Added $branch.md'`;
+    `git commit -a -m 'Added $filename'`;
     `git push origin HEAD:master`;
     chdir '..';
     `rm -rf bywater-koha-release-notes`;
+    
+    qx{curl -s --user 'api:$ENV{MAILGUN_TOKEN}' \\
+        https://api.mailgun.net/v3/sandbox7442ed4ef2884700b429df9b976f6398.mailgun.org/messages \\
+        -F from='Kyle M Hall <kyle@bywatersolutions.com>' \\
+        -F to=pipeline@bywatersolutions.com \\
+        -F subject='New Release Notes: $filename' \\
+        -F text='New ByWater Release notes added: https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename'
+    };
 }
 else {
     say $output;
