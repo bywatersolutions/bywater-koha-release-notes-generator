@@ -202,13 +202,18 @@ if ( $ENV{UPLOAD} ) {
     chdir '..';
     `rm -rf bywater-koha-release-notes`;
     
-    qx{curl -s --user 'api:$ENV{MAILGUN_TOKEN}' \\
-        https://api.mailgun.net/v3/sandbox7442ed4ef2884700b429df9b976f6398.mailgun.org/messages \\
-        -F from='Kyle M Hall <kyle\@bywatersolutions.com>' \\
-        -F to=pipeline\@bywatersolutions.com \\
-        -F subject='New Release Notes: $filename' \\
-        -F text='New ByWater Release notes added: https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename'
-    };
+    say "RELEASE NOTES FILENAME: $filename";
+    if ( $ENV{MAILGUN_TOKEN} ) {
+        qx{curl -s --user 'api:$ENV{MAILGUN_TOKEN}' \\
+            https://api.mailgun.net/v3/sandbox7442ed4ef2884700b429df9b976f6398.mailgun.org/messages \\
+            -F from='Kyle M Hall <kyle\@bywatersolutions.com>' \\
+            -F to=pipeline\@bywatersolutions.com \\
+            -F subject='New Release Notes: $filename' \\
+            -F text='New ByWater Release notes added: https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename'
+        };
+    } else {
+        say "WARNING: MailGun environment variable not set!";
+    }
 }
 else {
     say $output;
