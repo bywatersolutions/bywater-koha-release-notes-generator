@@ -13,15 +13,15 @@ ADD . /app
 
 RUN apt-get -y update \
     && apt-get -y install \
-    vim \
     git-core \
-    libssl-dev \
+    libcrypt-ssleay-perl \
+    libjson-perl \
+    liblwp-protocol-https-perl \
     libmodern-perl-perl \
     librest-client-perl \
-    libjson-perl \
+    libssl-dev \
     libtemplate-perl \
-    libcrypt-ssleay-perl \
-    liblwp-protocol-https-perl
+    libwww-perl
 
 RUN git clone --origin bws-production https://github.com/bywatersolutions/bywater-koha.git $KOHACLONE
 

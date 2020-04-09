@@ -3,11 +3,13 @@
 use Modern::Perl;
 
 use Data::Dumper;
-use REST::Client;
 use JSON;
+use LWP::UserAgent;
+use REST::Client;
 use Template;
 
 my $debug = $ENV{DEBUG};
+my $slack_webhook = $ENV{SLACK_WEBHOOK};
 
 my $rest = REST::Client->new();
 
@@ -213,6 +215,26 @@ if ( $ENV{UPLOAD} ) {
         };
     } else {
         say "WARNING: MailGun environment variable not set!";
+    }
+
+    if ( $ENV{SLACK_WEBHOOK} ) {
+        say "Sending message to Slack";
+        my $json_data = {
+            "attachments" => [
+                {
+                    title => "New Release Notes for $branch",
+                    text => "\@channel <https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename|View Release Notes>",
+                    mrkdwn_in => [ "text", "pretext", "fields" ],
+                }
+            ]
+        };
+        my $json_text = to_json($json_data);
+
+        $ua->post(
+            $slack_webhook,
+            Content_Type => 'application/json',
+            Content      => $json_text,
+        ) if $slack_webhook;
     }
 }
 else {
