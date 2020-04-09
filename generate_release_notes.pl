@@ -11,6 +11,8 @@ use Template;
 my $debug = $ENV{DEBUG};
 my $slack_webhook = $ENV{SLACK_WEBHOOK};
 
+my $ua = LWP::UserAgent->new;
+
 my $rest = REST::Client->new();
 
 $debug && warn "KOHACLONE: " . $ENV{KOHACLONE};
