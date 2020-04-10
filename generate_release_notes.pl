@@ -11,6 +11,8 @@ use Template;
 my $debug = $ENV{DEBUG};
 my $slack_webhook = $ENV{SLACK_WEBHOOK};
 
+say $slack_webhook ? "Slack Webhook Enabled" : "Slack Webhook Disabled";
+
 my $ua = LWP::UserAgent->new;
 
 my $rest = REST::Client->new();
