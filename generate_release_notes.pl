@@ -201,7 +201,9 @@ if ( $ENV{UPLOAD} ) {
     open( my $fh, '>', $filename );
     print $fh $output . "\n";
     close $fh;
-    `cat $prev_branch.md >> $filename`;
+
+    my $prev_file = `ls -1 | grep $edition | tail -1`;
+    `cat $prev_file >> $filename`;
     `git add *`;
     `git commit -a -m 'Added $filename'`;
     `git push origin HEAD:master`;
