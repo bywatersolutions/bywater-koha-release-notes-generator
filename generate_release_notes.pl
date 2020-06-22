@@ -193,6 +193,7 @@ $tt->process(
 
 if ( $ENV{UPLOAD} ) {
     my $token = $ENV{GITHUB_TOKEN};
+    die "NO GITHUB TOKEN PROVIDED" unless $token;
     `git clone https://$token\@github.com/bywatersolutions/bywater-koha-release-notes.git`;
     chdir './bywater-koha-release-notes';
     `git config --global user.email 'kyle\@bywatetsolutions.com'`;
