@@ -230,7 +230,7 @@ if ( $ENV{UPLOAD} ) {
             "attachments" => [
                 {
                     title => "New Release Notes for $branch",
-                    text => "\@channel <https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename|View Release Notes>",
+                    text => "\@here <https://github.com/bywatersolutions/bywater-koha-release-notes/blob/master/$filename|View Release Notes>",
                     mrkdwn_in => [ "text", "pretext", "fields" ],
                 }
             ]
