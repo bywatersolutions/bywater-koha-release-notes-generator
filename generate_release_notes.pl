@@ -204,6 +204,9 @@ if ( $ENV{UPLOAD} ) {
     close $fh;
 
     my $prev_file = `ls -1 | grep $edition | tail -1`;
+    say "FOUND PREVIOUS RELEASE NOTES: $prev_file";
+    say "PREVIOUS NOTES: ";
+    `cat $prev_file`;
     `cat $prev_file >> $filename`;
     `git add *`;
     `git commit -a -m 'Added $filename'`;
